@@ -1,10 +1,12 @@
 import React from "react";
+// import { Button } from "bulma-styled-components";
+import Router from "Components/Router";
 
 function App() {
   return (
-    <div className="App">
-      <p>Hello, World!</p>
-    </div>
+    <>
+      <Router></Router>
+    </>
   );
 }
 
