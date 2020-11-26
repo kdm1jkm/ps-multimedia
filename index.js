@@ -7,6 +7,7 @@ const applyForms = {
   number: document.querySelector(".form__number"),
   period: document.querySelector(".form__period"),
 };
+const deleteButton = document.querySelector(".js-delete");
 
 function isLocal() {
   return (
@@ -15,8 +16,11 @@ function isLocal() {
 }
 
 const API_URLS = {
-  get: isLocal() ? "http://127.0.0.1:5000/" : "",
-  apply: isLocal() ? "http://127.0.0.1:5000/apply" : "",
+  // get: isLocal() ? "http://127.0.0.1:5000/" : "",
+  // apply: isLocal() ? "http://127.0.0.1:5000/apply" : "",
+  get: "http://kdm1jkm.pythonanywhere.com/",
+  apply: "http://kdm1jkm.pythonanywhere.com//apply",
+  delete: "http://kdm1jkm.pythonanywhere.com//delete",
 };
 
 function clearInput() {
@@ -26,14 +30,18 @@ function clearInput() {
   applyForms.period.value = "";
 }
 
-function handleSubmit(event) {
-  event.preventDefault();
-
+function getStudentnum() {
   const { grade, class_num, number } = applyForms;
 
-  const student_number = `${grade.value}${class_num.value}${
+  return `${grade.value}${class_num.value}${
     number.value > 9 ? `${number.value}` : `0${number.value}`
   }`;
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+
+  const student_number = getStudentnum();
 
   const period = applyForms.period.value;
 
@@ -41,6 +49,14 @@ function handleSubmit(event) {
     student_number,
     period,
   };
+
+  await fetch(API_URLS.delete, {
+    method: "POST",
+    body: JSON.stringify({ student_number }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   fetch(API_URLS.apply, {
     method: "POST",
@@ -94,9 +110,26 @@ function loadData() {
     });
 }
 
+async function handleDelete(event) {
+  event.preventDefault();
+
+  const student_number = getStudentnum();
+
+  await fetch(API_URLS.delete, {
+    method: "POST",
+    body: JSON.stringify({ student_number }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  loadData();
+}
+
 function init() {
   loadData();
   applyForm.addEventListener("submit", handleSubmit);
+  deleteButton.addEventListener("click", handleDelete);
 }
 
 init();
